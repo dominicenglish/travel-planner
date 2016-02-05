@@ -1,1 +1,1 @@
-exports.counter = (state=0, action) => state;
+exports.counter = (state, action) => state || {};

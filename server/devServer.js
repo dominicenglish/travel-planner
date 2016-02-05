@@ -14,6 +14,8 @@ import * as reducers from '../shared/reducers/index.js';
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use('/static', express.static('static'));
+
 // Setup hot module reloading via webpack
 const compiler = webpack(webpackConfig);
 app.use(webpackDevMiddleware(compiler, {
@@ -25,10 +27,6 @@ app.use(webpackHotMiddleware(compiler, {}));
 app.use(handleRender);
 
 function handleRender(req, res) {
-  const reducer = combineReducers(reducers);
-  // const store = applyMiddleware(()=>{})(createStore)(reducer);
-  const store = createStore(reducer);
-  const initialState = store.getState();
 
   match({routes, location: req.url}, (error, redirectLocation, renderProps) => {
     if (error) {
@@ -36,12 +34,22 @@ function handleRender(req, res) {
     } else if (redirectLocation) {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search);
     } else if (renderProps) {
+      // const store = applyMiddleware(()=>{})(createStore)(reducer);
+      // const reducer = combineReducers(reducers);
+      let load
+      let initialState = {};
+      if (renderProps.routes[0].load &&
+        typeof renderProps.routes[0].load === 'function') {
+        initialState = renderProps.routes[0].load() || {};
+      }
+      const store = createStore(reducers.counter, initialState);
+      const reduxState = store.getState();
       const InitialComponent = (
         <Provider store={store}>
           <RouterContext {...renderProps} />
         </Provider>
       );
-      res.status(200).send(renderFullPage(renderToString(InitialComponent), initialState));
+      res.status(200).send(renderFullPage(renderToString(InitialComponent), reduxState));
     } else {
       res.status(404).send('Not found');
     }

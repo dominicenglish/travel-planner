@@ -20,14 +20,24 @@ module.exports = {
     new webpack.NoErrorsPlugin()
   ],
   module: {
-    loaders: [{
-      test: /\.jsx?/,
-      loaders: ['babel'],
-      include: [
-        path.join(__dirname, 'client'),
-        // path.join(__dirname, 'server'),
-        path.join(__dirname, 'shared')
-      ]
-    }]
+    loaders: [
+      {
+        test: /\.jsx?/,
+        loaders: ['babel'],
+        include: [
+          path.join(__dirname, 'client'),
+          // path.join(__dirname, 'server'),
+          path.join(__dirname, 'shared')
+        ]
+      },
+      {
+        test: /\.css?/,
+        loader: 'style!css'
+      },
+      {
+        test   : /\.(ttf|eot|svg|woff(2)?)?$/,
+        loader : 'file-loader'
+      }
+  ]
   }
 };
