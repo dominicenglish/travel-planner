@@ -29,6 +29,6 @@ const styles = cssInJS({
   welcome: {
     width: '500px',
     backgroundColor: '#fff',
-    padding: '20px',
+    padding: '30px',
   }
 });
