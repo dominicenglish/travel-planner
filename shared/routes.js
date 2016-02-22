@@ -13,7 +13,9 @@ import {
   SignUp,
 } from './components';
 
-import { getTrips } from '../../api/fakeAPI';
+// import ApiClient from '../api/ApiClient';
+// const api = new ApiClient();
+// api.get('/trips').then(data => console.log(data));
 
 const requireLogin = (nextState, replaceState, cb) => {
   cb(); return; //CRAZY
@@ -39,7 +41,7 @@ export default (
     <Route path='signup' component={SignUp}/>
 
     <Route onEnter={requireLogin}>
-      <Route path='trips' component={Trips} load={getTrips}/>
+      <Route path='trips' component={Trips}/>
     </Route>
   </Route>
 );
