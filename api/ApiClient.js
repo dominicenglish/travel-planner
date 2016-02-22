@@ -4,22 +4,22 @@ const fakeApi = {
   auth: {
     userId: 1,
   },
-  users: {
-    1: {
+  users: [
+    {
       id: 1,
       name: 'Dominic',
       username: 'Ticketmanbob',
       password: '1234',
     },
-    2: {
+    {
       id: 2,
       name: 'Tori',
       username: 'tori.condon@gmail.com',
       password: '4321',
     }
-  },
-  trips: {
-    1: {
+  ],
+  trips: [
+    {
       id: 1,
       departureDate: '2015-10-01',
       returnDate: '2015-11-01',
@@ -27,7 +27,7 @@ const fakeApi = {
       description: 'A super cool holiday to New Zealand',
       users: [1, 2],
     },
-    2: {
+    {
       id: 2,
       departureDate: '2015-05-06',
       returnDate: '2015-05-13',
@@ -35,9 +35,9 @@ const fakeApi = {
       description: 'A week in Melbourne',
       users: [1, 2],
     },
-  },
-  stops: {
-    1: {
+  ],
+  stops: [
+    {
       id: 1,
       tripId: 1,
       title: 'Hobbiton',
@@ -48,7 +48,7 @@ const fakeApi = {
         lng: '175.683291',
       },
     },
-    2: {
+    {
       id: 2,
       tripId: 1,
       title: 'Milford Sound',
@@ -59,7 +59,7 @@ const fakeApi = {
         lng: '167.924120',
       },
     },
-    3: {
+    {
       id: 3,
       tripId: 2,
       title: 'Aquarium!',
@@ -70,10 +70,10 @@ const fakeApi = {
         lng: '144.958275',
       },
     },
-  },
+  ],
 };
 
-export default class APIClient {
+export class APIClient {
   constructor(req) {
     methods.forEach((method) => {
       this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
@@ -93,6 +93,7 @@ export default class APIClient {
   trips(method, filter, params, data) {
     switch (method) {
       case 'get':
+        console.log('API: getTrips');
         if (filter) {
           return fakeApi.trips[filter];
         } else {
