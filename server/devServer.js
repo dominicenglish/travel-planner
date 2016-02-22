@@ -7,9 +7,9 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackConfig from '../webpack.config.dev';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import * as reducers from '../shared/reducers/index.js';
+import rootReducer from '../shared/redux/reducers/rootReducer.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,15 +34,14 @@ function handleRender(req, res) {
     } else if (redirectLocation) {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search);
     } else if (renderProps) {
-      // const store = applyMiddleware(()=>{})(createStore)(reducer);
-      // const reducer = combineReducers(reducers);
+      // const store = applyMiddleware(()=>{})(createStore)(rootReducer);
       let load
       let initialState = {};
       if (renderProps.routes[0].load &&
         typeof renderProps.routes[0].load === 'function') {
         initialState = renderProps.routes[0].load() || {};
       }
-      const store = createStore(reducers.counter, initialState);
+      const store = createStore(rootReducer, initialState);
       const reduxState = store.getState();
       const InitialComponent = (
         <Provider store={store}>
@@ -62,6 +61,7 @@ function renderFullPage(html, initialState) {
     <html>
       <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>React Transform Boilerplate</title>
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
@@ -75,11 +75,11 @@ function renderFullPage(html, initialState) {
     `;
 }
 
-app.listen(port, 'localhost', function(err) {
+app.listen(port, '192.168.1.5', function(err) {
   if (err) {
     console.log(err);
     return;
   }
 
-  console.log('Listening at http://localhost:'+port);
+  console.log('Listening at http://192.168.1.5:'+port);
 });
