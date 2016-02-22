@@ -1,3 +1,3 @@
-export App from './App/App';
-export Home from './Home/Home';
-export Trips from './Trips/Trips';
+export {default as App} from './App/App';
+export {default as Home} from './Home/Home';
+export {default as Trips} from './Trips/Trips';
