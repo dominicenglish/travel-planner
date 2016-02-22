@@ -26,7 +26,7 @@ module.exports = {
         loaders: ['babel'],
         include: [
           path.join(__dirname, 'client'),
-          // path.join(__dirname, 'server'),
+          path.join(__dirname, 'api'),
           path.join(__dirname, 'shared')
         ]
       },
