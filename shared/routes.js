@@ -5,7 +5,7 @@ import {
   App,
   Home,
   Trips,
-} from './containers';
+} from './containers/containers.js';
 // These should get removed as they should be done from inside containers
 import {
   Counter,
