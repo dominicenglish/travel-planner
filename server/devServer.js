@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import express from 'express';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
@@ -7,9 +8,11 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackConfig from '../webpack.config.dev';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from '../shared/redux/reducers/rootReducer.js';
+import createSagaMiddleware from 'redux-saga';
+import * as sagas from '../shared/redux/sagas/sagas.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -41,7 +44,14 @@ function handleRender(req, res) {
         typeof renderProps.routes[0].load === 'function') {
         initialState = renderProps.routes[0].load() || {};
       }
-      const store = createStore(rootReducer, initialState);
+      const store = createStore(
+        rootReducer,
+        initialState,
+        compose(
+          applyMiddleware(createSagaMiddleware(sagas.watchTripsRequest)),
+          typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f,
+        ),
+      );
       const reduxState = store.getState();
       const InitialComponent = (
         <Provider store={store}>
