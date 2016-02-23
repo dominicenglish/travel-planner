@@ -3,7 +3,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router, browserHistory } from 'react-router';
 import routes from '../shared/routes';
-import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from '../shared/redux/reducers/rootReducer.js';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
