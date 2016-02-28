@@ -2,12 +2,18 @@ import 'babel-polyfill';
 import React from 'react';
 import { render } from 'react-dom';
 import { Router, browserHistory } from 'react-router';
-import routes from '../shared/routes';
+import injectTapEventPlugin from 'react-tap-event-plugin'; // Needed for pre 1.0 version of material-ui libarary
 import { createStore, applyMiddleware, compose } from 'redux';
-import rootReducer from '../shared/redux/reducers/rootReducer.js';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
+import MuiThemeProvider from 'material-ui/lib/MuiThemeProvider';
+import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+
+import routes from '../shared/routes';
+import rootReducer from '../shared/redux/reducers/rootReducer.js';
 import * as sagas from '../shared/redux/sagas/sagas.js';
+import getTheme from '../shared/theme/theme.js';
+
 require('../static/main.css');
 require('../static/bundle.css');
 
@@ -22,8 +28,13 @@ const store = createStore(
   ),
 );
 
+// Needed for pre 1.0 version of material-ui libarary
+injectTapEventPlugin();
+const muiTheme = getMuiTheme(getTheme());
 render((
-  <Provider store={store}>
-    <Router history={browserHistory}>{routes}</Router>
-  </Provider>
+  <MuiThemeProvider muiTheme={muiTheme}>
+    <Provider store={store}>
+      <Router history={browserHistory}>{routes}</Router>
+    </Provider>
+  </MuiThemeProvider>
 ), document.getElementById('root'));

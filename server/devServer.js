@@ -3,16 +3,21 @@ import express from 'express';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
-import routes from '../shared/routes';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
-import webpackConfig from '../webpack.config.dev';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
-import rootReducer from '../shared/redux/reducers/rootReducer.js';
 import createSagaMiddleware from 'redux-saga';
+import useragent from 'express-useragent';
+import MuiThemeProvider from 'material-ui/lib/MuiThemeProvider';
+import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+
+import webpackConfig from '../webpack.config.dev';
+import routes from '../shared/routes';
+import rootReducer from '../shared/redux/reducers/rootReducer.js';
 import * as sagas from '../shared/redux/sagas/sagas.js';
+import getTheme from '../shared/theme/theme.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,6 +32,14 @@ app.use(webpackDevMiddleware(compiler, {
 }));
 app.use(webpackHotMiddleware(compiler, {}));
 
+app.use(useragent.express());
+
+app.use(function(req, res, next) {
+  // needed by material-ui
+  global.navigator = {userAgent: req.useragent.source};
+  next();
+});
+
 app.use(handleRender);
 
 function handleRender(req, res) {
@@ -37,7 +50,6 @@ function handleRender(req, res) {
     } else if (redirectLocation) {
       res.redirect(302, redirectLocation.pathname + redirectLocation.search);
     } else if (renderProps) {
-      // const store = applyMiddleware(()=>{})(createStore)(rootReducer);
       let load
       let initialState = {};
       if (renderProps.routes[0].load &&
@@ -53,10 +65,13 @@ function handleRender(req, res) {
         ),
       );
       const reduxState = store.getState();
+      const muiTheme = getMuiTheme(getTheme());
       const InitialComponent = (
-        <Provider store={store}>
-          <RouterContext {...renderProps} />
-        </Provider>
+        <MuiThemeProvider muiTheme={muiTheme}>
+          <Provider store={store}>
+            <RouterContext {...renderProps} />
+          </Provider>
+        </MuiThemeProvider>
       );
       res.status(200).send(renderFullPage(renderToString(InitialComponent), reduxState));
     } else {
