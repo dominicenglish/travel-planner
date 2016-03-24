@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import React from 'react';
 import { render } from 'react-dom';
 import { Router, browserHistory } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';
 import injectTapEventPlugin from 'react-tap-event-plugin'; // Needed for pre 1.0 version of material-ui libarary
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
@@ -28,13 +29,15 @@ const store = createStore(
   ),
 );
 
+const history = syncHistoryWithStore(browserHistory, store);
+
 // Needed for pre 1.0 version of material-ui libarary
 injectTapEventPlugin();
 const muiTheme = getMuiTheme(getTheme());
 render((
   <MuiThemeProvider muiTheme={muiTheme}>
     <Provider store={store}>
-      <Router history={browserHistory}>{routes}</Router>
+      <Router history={history}>{routes}</Router>
     </Provider>
   </MuiThemeProvider>
 ), document.getElementById('root'));

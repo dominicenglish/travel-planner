@@ -41,8 +41,10 @@
     "react-dom": "^0.14.7",
     "react-redux": "^4.0.6",
     "react-router": "^2.0.0-rc5",
+    "react-router-redux": "^4.0.0",
     "react-tap-event-plugin": "^0.2.2",
     "redux": "^3.3.1",
+    "redux-form": "^4.2.0",
     "redux-router": "^1.0.0-beta7",
     "redux-saga": "^0.8.2"
   }
