@@ -3,7 +3,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
-import injectTapEventPlugin from 'react-tap-event-plugin'; // Needed for pre 1.0 version of material-ui libarary
+import injectTapEventPlugin from 'react-tap-event-plugin'; // Needed for pre 1.0 version of material-ui library
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
@@ -12,19 +12,18 @@ import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 
 import routes from '../shared/routes';
 import rootReducer from '../shared/redux/reducers/rootReducer.js';
-import * as sagas from '../shared/redux/sagas/sagas.js';
+import sagas from '../shared/redux/sagas/sagas.js';
 import getTheme from '../shared/theme/theme.js';
 
 require('../static/main.css');
 require('../static/bundle.css');
 
 const reduxState = window.__INITIAL_STATE__;
-
 const store = createStore(
   rootReducer,
   reduxState,
   compose(
-    applyMiddleware(createSagaMiddleware(sagas.watchTripsRequest)),
+    applyMiddleware(createSagaMiddleware(sagas)),
     typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f,
   ),
 );
