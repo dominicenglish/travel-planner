@@ -16,7 +16,7 @@ import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import webpackConfig from '../webpack.config.dev';
 import routes from '../shared/routes';
 import rootReducer from '../shared/redux/reducers/rootReducer.js';
-import * as sagas from '../shared/redux/sagas/sagas.js';
+import sagas from '../shared/redux/sagas/sagas.js';
 import getTheme from '../shared/theme/theme.js';
 
 const app = express();
@@ -60,7 +60,7 @@ function handleRender(req, res) {
         rootReducer,
         initialState,
         compose(
-          applyMiddleware(createSagaMiddleware(sagas.watchTripsRequest)),
+          applyMiddleware(createSagaMiddleware(sagas)),
           typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f,
         ),
       );
