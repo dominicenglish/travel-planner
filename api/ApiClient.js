@@ -1,6 +1,6 @@
 const methods = ['get', 'post', 'put', 'delete'];
 
-const fakeApi = {
+let fakeApi = {
   auth: {
     userId: 1,
   },
@@ -25,6 +25,7 @@ const fakeApi = {
       returnDate: '2015-11-01',
       title: 'New Zealand Adventure',
       description: 'A super cool holiday to New Zealand',
+      image: 'new_zealand_sheep_farm.jpg',
       users: [1, 2],
     },
     {
@@ -33,6 +34,7 @@ const fakeApi = {
       returnDate: '2015-05-13',
       title: 'Melbourne',
       description: 'A week in Melbourne',
+      image: 'Road_to_mount_cook_new_zealand.jpg',
       users: [1, 2],
     },
   ],
@@ -93,14 +95,46 @@ export class APIClient {
   trips(method, filter, params, data) {
     switch (method) {
       case 'get':
-        console.log('API: getTrips');
         if (filter) {
           return fakeApi.trips[filter];
         } else {
           return fakeApi.trips;
         }
+      case 'put':
+        // const {trip} = data;
+        const trip = {
+          id: 3,
+          departureDate: '2017-10-01',
+          returnDate: '2017-11-01',
+          title: 'France',
+          description: 'Francy france france',
+          image: 'new-zealand-short-trip.jpg',
+          users: [1, 2],
+        };
+        fakeApi.trips.push(trip);
+        return trip;
     }
   }
+
+  stops(method, filter, params, data) {
+    switch (method) {
+      case 'put':
+        const { tripId } = data;
+        fakeApi.trips[tripId].stops.push({
+          id: 4,
+          tripId: 2,
+          title: 'Coffee!',
+          description: 'See some hipsters',
+          address: 'Some shop, Melbourne',
+          coordinates: {
+            lat: '-37.821030',
+            lng: '144.958275',
+          },
+        });
+        return fakeApi.trips[tripId].stops;
+    }
+  }
+
 }
 
 // module.exports.getTrips = () => ({trips: data.trips});
