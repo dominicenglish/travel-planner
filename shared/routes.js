@@ -11,7 +11,8 @@ import {
   Counter,
   SignIn,
   SignUp,
-} from './components';
+  AddTrips,
+} from './components/components.js';
 
 // import ApiClient from '../api/ApiClient';
 // const api = new ApiClient();
@@ -36,17 +37,14 @@ const requireLogin = (nextState, replaceState, cb) => {
 
 export default (
   <Route path='/' component={App}>
-    <IndexRoute component={Home}/>
-    <Route path='signin' component={SignIn}/>
-    <Route path='signup' component={SignUp}/>
+    <IndexRoute component={Home} />
+    <Route path='signin' component={SignIn} />
+    <Route path='signup' component={SignUp} />
 
     <Route onEnter={requireLogin}>
-      <Route path='trips' component={Trips}/>
+      <Route path='trips' component={Trips}>
+        <Route path='add' component={AddTrips} />
+      </Route>
     </Route>
   </Route>
 );
-
-// export default (
-//   <Route path='/' component={App}>
-//   </Route>
-// );
