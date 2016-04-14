@@ -1,6 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import AppBar from 'material-ui/lib/app-bar';
+import LeftNav from 'material-ui/lib/left-nav';
+import MenuItem from 'material-ui/lib/menus/menu-item';
+
+import { setNavigationState } from '../../redux/actions/navigationActions.js';
 
 class App extends Component {
   // static propTypes = {
@@ -14,22 +19,36 @@ class App extends Component {
     store: PropTypes.object.isRequired,
   };
 
+  test = () => {
+    console.log('test');
+  };
+
   render() {
+    const { isNavigationOpen, setNavigationState, title, children } = this.props;
     return (
       <div className={styles.app}>
         <div className={styles.background}></div>
         <div className={styles.blend}></div>
-        <div className={styles.header}>
-          <h1 className={styles.logo}> Logo </h1>
-          <nav>navigation</nav>
-        </div>
-        {this.props.children}
+        <AppBar title={title} onLeftIconButtonTouchTap={()=>{setNavigationState(open)}}/>
+        <LeftNav docked={false} open={isNavigationOpen} onRequestChange={(open)=>setNavigationState(open)}>
+          <MenuItem ><Link to="/">Home</Link></MenuItem>
+          <MenuItem ><Link to="/trips">Trips</Link></MenuItem>
+        </LeftNav>
+        {children}
       </div>
     );
   }
 }
 
-export default connect(state => ({trips: state.trips}))(App);
+const mapStateToProps = state => ({
+  isNavigationOpen: state.navigation,
+  title: state.title,
+  trips: state.trips
+});
+
+const mapDispatchToProps = { setNavigationState };
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 const styles = cssInJS({
   app: {
@@ -54,7 +73,7 @@ const styles = cssInJS({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundImage: 'url(\'/static/new_zealand_sheep_farm.jpg\')',
+    // backgroundImage: 'url(\'/static/new_zealand_sheep_farm.jpg\')',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
   },
@@ -65,7 +84,7 @@ const styles = cssInJS({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: 'rgba(0, 10, 0, 0.3)',
-    background: 'radial-gradient(ellipse at center,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%)',
+    // backgroundColor: 'rgba(0, 10, 0, 0.3)',
+    // background: 'radial-gradient(ellipse at center,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.65) 100%)',
   }
 });
