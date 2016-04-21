@@ -4,6 +4,7 @@ import { reducer as form } from 'redux-form';
 import trips from './tripsReducer.js';
 import title from './titleReducer.js';
 import navigation from './navigationReducer.js';
+import map from './mapReducer.js';
 
 const rootReducer = combineReducers({
   navigation,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   trips,
   form,
   routing,
+  map,
 });
 
 export default rootReducer;
