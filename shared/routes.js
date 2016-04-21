@@ -5,6 +5,7 @@ import {
   App,
   Home,
   Trips,
+  Trip,
 } from './containers/containers.js';
 // These should get removed as they should be done from inside containers
 import {
@@ -45,6 +46,7 @@ export default (
       <Route path='trips' component={Trips}>
         <Route path='add' component={AddTrips} />
       </Route>
+      <Route path='trips/:id' component={Trip} />
     </Route>
   </Route>
 );
