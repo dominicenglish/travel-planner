@@ -21,7 +21,6 @@ class AddTrips extends Component {
   handleSubmit = (data) => {
     const { createTrip } = this.props;
     createTrip(data.tripName);
-    console.log('handling create trip', data, createTrip);
     this.handleClose();
   };
 
