@@ -3,6 +3,7 @@ import {
   TRIPS_GET_SUCCESS,
   TRIPS_GET_FAIL,
   TRIPS_CREATE_SUCCESS,
+  TRIP_GET_SUCCESS,
 } from '../actions/tripsActions.js';
 
 export default function reducer(state = [], action = {}) {
@@ -15,6 +16,12 @@ export default function reducer(state = [], action = {}) {
     case TRIPS_GET_FAIL:
       return state;
     case TRIPS_CREATE_SUCCESS:
+      return [
+        ...state,
+        action.trip,
+      ];
+    case TRIP_GET_SUCCESS:
+      console.log(action.trip);
       return [
         ...state,
         action.trip,
