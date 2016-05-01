@@ -14,21 +14,22 @@ import {default as FaSpinner} from 'react-icons/lib/fa/spinner';
 class Trip extends Component {
   render() {
     const trips = [
-      {name: 'woo', coordinates: {lat: -38.353078, lng: 174.374111}},
-      {name: 'woo', coordinates: {lat: -39.653078, lng: 175.375111}},
-      {name: 'woo', coordinates: {lat: -38.653078, lng: 174.381111}},
-      {name: 'woo', coordinates: {lat: -37.653078, lng: 173.382111}},
-      {name: 'woo', coordinates: {lat: -37.253078, lng: 173.383111}},
-      {name: 'woo', coordinates: {lat: -36.653078, lng: 172.384111}},
-      {name: 'wee', coordinates: {lat: -41.653078, lng: 173.376111}},
-      {name: 'woo', coordinates: {lat: -42.663078, lng: 173.377111}},
-      {name: 'woo', coordinates: {lat: -43.673078, lng: 172.378111}},
-      {name: 'woo', coordinates: {lat: -44.653078, lng: 171.379111}},
-      {name: 'woo', coordinates: {lat: -45.653078, lng: 170.371111}},
-      {name: 'woo', coordinates: {lat: -46.653078, lng: 169.372111}},
-      {name: 'woo', coordinates: {lat: -47.653078, lng: 168.373111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -38.353078, lng: 174.374111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -39.653078, lng: 175.375111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -38.653078, lng: 174.381111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -37.653078, lng: 173.382111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -37.253078, lng: 173.383111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -36.653078, lng: 172.384111}},
+      {name: 'wee', description: 'description', coordinates: {lat: -41.653078, lng: 173.376111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -42.663078, lng: 173.377111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -43.673078, lng: 172.378111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -44.653078, lng: 171.379111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -45.653078, lng: 170.371111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -46.653078, lng: 169.372111}},
+      {name: 'woo', description: 'description', coordinates: {lat: -47.653078, lng: 168.373111}},
     ];
     const {
+      children,
       map: {centre = {lat: -47.653078, lng: 168.373111}} = {},
       setMapCentre,
     } = this.props;
@@ -37,6 +38,7 @@ class Trip extends Component {
     });
     return (
       <div className={styles.container}>
+        {children}
         <List className={styles.destinationList}>{destinations}</List>
         <Map centreCoordinates={centre} trips={trips} setMapCentre={setMapCentre}></Map>
       </div>
