@@ -1,6 +1,6 @@
 import { takeEvery, takeLatest } from 'redux-saga';
 import { fork, call, put } from 'redux-saga/effects';
-import { APIClient } from '../../../api/ApiClient.js';
+import APIClient from '../../../api/ApiClient.js';
 import {
   TRIPS_GET,
   TRIPS_GET_SUCCESS,
@@ -30,35 +30,52 @@ import {
 
 const api = new APIClient();
 
-export function *getTrips() {
+export function *getTrips(action={}) {
   try {
-    const trips = yield api.get('/trips');
+    const trips = yield call(api.get, '/trips');
     yield put({type: TRIPS_GET_SUCCESS, trips})
   } catch (error) {
     yield put({type: TRIPS_GET_FAIL, error});
   }
 }
 
-function *addTrip() {
+export function *createTrip(action={}) {
+  const {
+    departureDate,
+    returnDate,
+    title,
+    description,
+    image,
+    users = []
+  } = action;
   try {
-    const trip = yield call(api.put, '/trips', {params: 'test'});
+    const trip = yield call(api.put, '/trips', {
+      params: {
+        departureDate,
+        returnDate,
+        title,
+        description,
+        image,
+        users
+      }
+    });
     yield put({type: TRIPS_CREATE_SUCCESS, trip});
   } catch (error) {
     yield put({type: TRIPS_CREATE_FAIL, error});
   }
 }
 
-function *getTrip(action={}) {
-  const { id } = action;
+export function *getTrip(action={}) {
+  const { tripId } = action;
   try {
-    const trip = yield call(api.get, `/trips/${id}`);
+    const trip = yield call(api.get, `/trips/${tripId}`);
     yield put({type: TRIP_GET_SUCCESS, trip});
   } catch (error) {
     yield put({type: TRIP_GET_FAIL, error});
   }
 }
 
-function *getStops(action={}) {
+export function *getStops(action={}) {
   const { tripId } = action;
   try {
     const stops = yield call(api.get, `/stops`, {params: {tripId}});
@@ -68,10 +85,10 @@ function *getStops(action={}) {
   }
 }
 
-function *createStop(action={}) {
+export function *createStop(action={}) {
   const { tripId, title, description, address, images=[], coordinates={} } = action;
   try {
-    const stops = yield call(api.create, `/stops`, {
+    const stop = yield call(api.put, `/stops`, {
       params: {
         tripId,
         title,
@@ -81,13 +98,13 @@ function *createStop(action={}) {
         coordinates,
       }
     });
-    yield put({type: STOPS_CREATE_SUCCESS, stops});
+    yield put({type: STOPS_CREATE_SUCCESS, stop});
   } catch (error) {
     yield put({type: STOPS_CREATE_FAIL, error});
   }
 }
 
-function *updateStop(action={}) {
+export function *updateStop(action={}) {
   const { stopId, tripId, title, description, address, images=[], coordinates={} } = action;
   try {
     const stop = yield call(api.post, `/stops/${stopId}`, {
@@ -106,7 +123,7 @@ function *updateStop(action={}) {
   }
 }
 
-function *deleteStop(action={}) {
+export function *deleteStop(action={}) {
   const { stopId } = action;
   try {
     const stop = yield call(api.delete, `/stops/${stopId}`);
@@ -120,8 +137,8 @@ function *watchTripsRequest() {
     yield *takeLatest(TRIPS_GET, getTrips);
 }
 
-function *watchAddTrip() {
-  yield *takeLatest(TRIPS_CREATE, addTrip);
+function *watchCreateTrip() {
+  yield *takeLatest(TRIPS_CREATE, createTrip);
 }
 
 function *watchGetTrip() {
@@ -147,7 +164,7 @@ function *watchDeleteStop() {
 export default function *root() {
   yield [
     fork(watchTripsRequest),
-    fork(watchAddTrip),
+    fork(watchCreateTrip),
     fork(watchGetStops),
     fork(watchCreateStop),
     fork(watchUpdateStop),

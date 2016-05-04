@@ -80,7 +80,7 @@ let fakeApi = {
   ],
 };
 
-export class APIClient {
+export default class APIClient {
   constructor(req) {
     methods.forEach((method) => {
       this[method] = (path, { params, data } = {}) => new Promise((resolve, reject) => {
