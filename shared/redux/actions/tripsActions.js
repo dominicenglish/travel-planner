@@ -20,9 +20,9 @@ export const createTrip = (title) => {
     title,
   };
 };
-export const getTrip = (id) => {
+export const getTrip = (tripId) => {
   return {
     type: TRIP_GET,
-    id,
+    tripId,
   };
 };
