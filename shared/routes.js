@@ -7,6 +7,7 @@ import {
   Trips,
   Trip,
   Stop,
+  AddStops,
 } from './containers/containers.js';
 // These should get removed as they should be done from inside containers
 import {
@@ -15,10 +16,6 @@ import {
   SignUp,
   AddTrips,
 } from './components/components.js';
-
-// import ApiClient from '../api/ApiClient';
-// const api = new ApiClient();
-// api.get('/trips').then(data => console.log(data));
 
 const requireLogin = (nextState, replaceState, cb) => {
   cb(); return; //CRAZY
@@ -47,7 +44,8 @@ export default (
       <Route path='trips' component={Trips}>
         <Route path='add' component={AddTrips} />
       </Route>
-      <Route path='/trips/:id' component={Trip}>
+      <Route path='/trips/:tripId' component={Trip}>
+        <Route path='/trips/:tripId/stops/add' component={AddStops} />
         <Route path='/trips/:tripId/stops/:stopId' component={Stop} />
       </Route>
     </Route>
