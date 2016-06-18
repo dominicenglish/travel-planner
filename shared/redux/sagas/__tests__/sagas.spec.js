@@ -13,14 +13,17 @@ import {
   updateStop,
   deleteStop
 } from '../sagas.js';
-import APIClient from '../../../../api/ApiClient.js';
+import apiClient from '../../../../api/ApiClient.js';
 import {
   TRIPS_GET_SUCCESS,
   TRIPS_GET_FAIL,
   TRIPS_CREATE_SUCCESS,
   TRIPS_CREATE_FAIL,
   TRIP_GET_SUCCESS,
-  TRIP_GET_FAIL,
+  TRIP_GET_FAIL
+} from '../../actions/tripsActions.js';
+
+import {
   STOPS_GET_SUCCESS,
   STOPS_GET_FAIL,
   STOPS_CREATE_SUCCESS,
@@ -29,10 +32,10 @@ import {
   STOPS_UPDATE_FAIL,
   STOPS_DELETE_SUCCESS,
   STOPS_DELETE_FAIL
-} from '../../actions/tripsActions.js';
+} from '../../actions/stopsActions.js';
 
 describe('sagas', () => {
-  const api = new APIClient();
+  const api = apiClient();
   describe('getTrips', () => {
     it('should yield a call effect pointing to api.get', () => {
       const generator = getTrips();
@@ -136,8 +139,8 @@ describe('sagas', () => {
       const fakeErrorMessage = 'message';
       const generator = getStops();
       generator.next();
-      const { value: effect } = generator.throw(fakeErrorMessage);
-      expect(effect).toEqual(put({type: STOPS_GET_FAIL, error: fakeErrorMessage}));
+      const { value: effect } = generator.throw(new Error(fakeErrorMessage));
+      expect(effect).toEqual(put({type: STOPS_GET_FAIL, message: fakeErrorMessage, name: 'Error'}));
     });
   })
 
