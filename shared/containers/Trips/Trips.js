@@ -15,10 +15,10 @@ import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
+import { push as pushHistory } from 'react-router-redux';
 
 import { setTitle } from '../../redux/actions/titleActions.js';
 import { getTrips, createTrip } from '../../redux/actions/tripsActions.js';
-
 
 class Trips extends Component {
 
@@ -34,13 +34,24 @@ class Trips extends Component {
   }
 
   onAddTrip = (event) => {
-    this.context.router.push('/trips/add');
+    this.props.pushHistory('/trips/add');
+  };
+
+  viewTrip = (id, event) => {
+    this.context.router.push(`/trips/${id}`);
   };
 
   render() {
-    const tripTiles = this.props.trips ? this.props.trips.map(trip => (
-      <GridTile key={trip.id} title={trip.title} subtitle={<span>{trip.locationCount || 0} locations</span>}><img className={styles.image} src={'/static/' + trip.image}/></GridTile>
-    )) : [];
+    const tripTiles = this.props.trips ? Object.values(this.props.trips).map(trip => {
+      return (
+        <GridTile
+          onClick={this.viewTrip.bind(this, trip.id)}
+          key={trip.id}
+          title={trip.title}
+          subtitle={<span>{trip.locationCount || 0} locations</span>}>
+          <img className={styles.image} src={'/static/' + trip.image}/>
+        </GridTile>
+    )}) : [];
     return (
       <div className={styles.container}>
         <div className={styles.paper}>
@@ -48,7 +59,7 @@ class Trips extends Component {
             {tripTiles}
           </GridList>
         </div>
-        <FloatingActionButton className={styles.button} onMouseUp={this.onAddTrip} style={{
+        <FloatingActionButton className={styles.button} onTouchTap={this.onAddTrip} style={{
           position: 'absolute',
           right: 30,
           bottom: 30,
@@ -60,7 +71,7 @@ class Trips extends Component {
 }
 
 const mapStateToProps = state => ({title: state.title, trips: state.trips});
-const mapDispatchToProps = { setTitle, getTrips, createTrip };
+const mapDispatchToProps = { setTitle, getTrips, createTrip, pushHistory };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Trips);
 
