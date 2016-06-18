@@ -1,9 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
+import InfoIcon from 'material-ui/lib/svg-icons/action/info';
+import FloatingActionButton from 'material-ui/lib/floating-action-button';
+import ContentAdd from 'material-ui/lib/svg-icons/content/add';
 import { connect } from 'react-redux';
+import { push as pushHistory } from 'react-router-redux';
 
 import { setMapCentre } from '../../redux/actions/mapActions.js';
+import { getTrip } from '../../redux/actions/tripsActions.js';
+import { getStops } from '../../redux/actions/stopsActions.js';
+import { setTitle } from '../../redux/actions/titleActions.js';
 
 // for Map
 import { GoogleMapLoader, GoogleMap, Marker } from 'react-google-maps';
@@ -12,73 +19,145 @@ import {default as FaSpinner} from 'react-icons/lib/fa/spinner';
 
 
 class Trip extends Component {
+
+  static contextTypes = {
+    router: React.PropTypes.object,
+  };
+
+  componentWillMount() {
+    const { params: {tripId}, getTrip, getStops, setTitle } = this.props;
+    getTrip(tripId);
+    getStops(tripId);
+  }
+
+  componentWillUpdate() {
+    const { setTitle, params: {tripId}, trips } = this.props;
+    const trip = trips[tripId] || {};
+    setTitle(trip.title);
+  }
+
+  onStopLinkClick = (coordinates, e) => {
+    this.props.setMapCentre(coordinates.lat, coordinates.lng);
+  };
+
+  onStopInfoLinkClick = (tripId, stopId, coordinates, e) => {
+    this.props.setMapCentre(coordinates.lat, coordinates.lng);
+    this.context.router.push(`/trips/${tripId}/stops/${stopId}`);
+  };
+
+  onAddStopClick = (tripId, e) => {
+    this.props.pushHistory(`/trips/${tripId}/stops/add`);
+  };
+
   render() {
-    const trips = [
-      {name: 'woo', description: 'description', coordinates: {lat: -38.353078, lng: 174.374111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -39.653078, lng: 175.375111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -38.653078, lng: 174.381111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -37.653078, lng: 173.382111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -37.253078, lng: 173.383111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -36.653078, lng: 172.384111}},
-      {name: 'wee', description: 'description', coordinates: {lat: -41.653078, lng: 173.376111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -42.663078, lng: 173.377111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -43.673078, lng: 172.378111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -44.653078, lng: 171.379111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -45.653078, lng: 170.371111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -46.653078, lng: 169.372111}},
-      {name: 'woo', description: 'description', coordinates: {lat: -47.653078, lng: 168.373111}},
-    ];
     const {
       children,
       map: {centre = {lat: -47.653078, lng: 168.373111}} = {},
       setMapCentre,
+      trips,
+      stops,
+      params: {tripId}
     } = this.props;
-    const destinations = trips.map((trip, index) => {
-      return (<ListItem key={index} primaryText={trip.name} />);
+    const trip = trips[tripId] || {};
+    const stopOrder = trip.stops || [];
+    const stopArray = stopOrder.reduce((prev, id) => {
+      if (stops[id]) prev.push(stops[id]);
+      return prev;
+    }, []);
+    const stopsList = stopOrder.map((stopId, index) => {
+      const stop = stops[stopId] || {};
+      return (
+        <ListItem
+          key={index}
+          primaryText={stop.title}
+          onClick={this.onStopLinkClick.bind(this, stop.coordinates)}
+          rightIcon={
+            <InfoIcon
+              onClick={this.onStopInfoLinkClick.bind(this, trip.id, stop.id, stop.coordinates)
+          }/>}
+        />
+      );
     });
     return (
       <div className={styles.container}>
         {children}
-        <List className={styles.destinationList}>{destinations}</List>
-        <Map centreCoordinates={centre} trips={trips} setMapCentre={setMapCentre}></Map>
+        <div className={styles.sidebar}>
+          <List className={styles.stopList}>
+            {stopsList}
+          </List>
+          <FloatingActionButton
+            mini={true}
+            style={extraStyles.fab}
+            onTouchTap={this.onAddStopClick.bind(this, trip.id)}
+            >
+              <ContentAdd/>
+          </FloatingActionButton>
+        </div>
+        <Map centreCoordinates={centre} stops={stopArray} setMapCentre={setMapCentre}></Map>
       </div>
     );
   }
 }
-const mapStateToProps = state => ({map: state.map});
-const mapDispatchToProps = { setMapCentre };
+const mapStateToProps = state => ({map: state.map, trips: state.trips, stops: state.stops});
+const mapDispatchToProps = { setMapCentre, getTrip, getStops, setTitle, pushHistory };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Trip);
 
+
+
+
+
+
 class Map extends Component {
 
-  centreMap = (latLng) => {
-    this.props.setMapCentre(-47.653078, 172.378111);
-    this._googleMapComponent.panTo(latLng);
+  static propTypes = {
+    centreCoordinates: PropTypes.shape({
+      lat: PropTypes.number,
+      lng: PropTypes.number
+    }),
+    stops: PropTypes.array,
+    setMapCentre: PropTypes.func,
   };
 
+  componentDidUpdate() {
+    // Centre the map to match props if the component updates
+    this.centreGoogleMap(this.props.centreCoordinates);
+  }
+
+  // Interact with the maps API to pan the screen
+  centreGoogleMap = (latLng) => {
+    if (this._googleMapComponent) {
+      this._googleMapComponent.panTo(latLng);
+    }
+  };
+
+  // Tells redux where we would like to centre the map
   centreOnMarker = (e) => {
-    this.centreMap(e.latLng);
+    if (e.latLng.lat() && e.latLng.lng()) {
+      this.props.setMapCentre(e.latLng.lat(), e.latLng.lng());
+    }
   };
 
   render() {
-    const {centreCoordinates, trips = [], setMapCentre} = this.props;
+    const {centreCoordinates, stops = []} = this.props;
     const map = (
       <GoogleMap
-        ref={map => {this._googleMapComponent = map; console.log(this);}}
+        ref={map => this._googleMapComponent = map}
         defaultZoom={5}
         defaultCenter={centreCoordinates}
       >
-        {trips.map((trip, index) => {
+        {stops.map((stop, index) => {
+          if (stop.coordinates.lat && stop.coordinates.lng) {
             return (
               <Marker
                 className={styles.map}
-                position={trip.coordinates}
+                position={stop.coordinates}
                 key={index}
                 defaultAnimation={2}
                 onClick={this.centreOnMarker}
               />
             );
+          }
         })}
       </GoogleMap>
     );
@@ -104,21 +183,32 @@ class Map extends Component {
 const styles = cssInJS({
   container: {
     display: 'flex',
+    flexGrow: '1',
   },
-  destinationList: {
+  sidebar: {
+    position: 'relative',
     flexGrow: 1,
     maxWidth: 300,
+  },
+  stopList: {
     overflowY: 'auto',
   },
   mapContainer: {
     flexGrow: 1,
     minWidth: 500,
-    minHeight: 300,
+    minHeight: 500,
   },
   map: {
     flexGrow: 1,
     minWidth: 500,
-    minHeight: 300,
+    minHeight: 500,
     backgroundColor: '#ddd',
-  }
+  },
 });
+const extraStyles = {
+  fab: {
+    position: 'absolute',
+    bottom: 10,
+    right: 16,
+  },
+};
