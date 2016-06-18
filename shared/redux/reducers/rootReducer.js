@@ -5,6 +5,8 @@ import trips from './tripsReducer.js';
 import title from './titleReducer.js';
 import navigation from './navigationReducer.js';
 import map from './mapReducer.js';
+import stops from './stopsReducer.js';
+import errors from './errorsReducer.js';
 
 const rootReducer = combineReducers({
   navigation,
@@ -13,6 +15,8 @@ const rootReducer = combineReducers({
   form,
   routing,
   map,
+  stops,
+  errors,
 });
 
 export default rootReducer;
