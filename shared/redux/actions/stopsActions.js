@@ -20,10 +20,17 @@ export const getStops = (tripId) => {
   };
 };
 
-export const createStop = (...props) => {
+export const createStop = (props) => {
+  const { tripId, title, description, address, images=[] } = props;
   return {
-    type: STOPS_GET,
-    ...props,
+    type: STOPS_CREATE,
+    trip: {
+      tripId,
+      title,
+      description,
+      address,
+      images
+    }
   };
 };
 
