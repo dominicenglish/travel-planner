@@ -6,7 +6,8 @@ import CardMedia from 'material-ui/lib/card/card-media';
 import CardTitle from 'material-ui/lib/card/card-title';
 import CardText from 'material-ui/lib/card/card-text';
 
-import { getTrip } from '../../redux/actions/tripsActions.js';
+import { getStops } from '../../redux/actions/stopsActions.js';
+import StopInfo from '../../components/Stops/StopInfo.js';
 
 class Stop extends Component {
 
@@ -19,8 +20,8 @@ class Stop extends Component {
   };
 
   componentWillMount() {
-    const { params: {tripId}, getTrip } = this.props;
-    getTrip(tripId);
+    const { params: {tripId}, getStops } = this.props;
+    getStops(tripId);
   }
 
   handleClose = () => {
@@ -29,26 +30,27 @@ class Stop extends Component {
   };
 
   render() {
-    const { params: {tripId}, trips = []} = this.props;
-    const trip = trips.find((trip) => {
-      return trip.id == tripId;
-    });
-    const { title='', address='', description='', image=''} = trip || {};
+    const { params: {stopId}, stops = {}} = this.props;
+    const stop = stops[stopId];
+    const { title='', description='', address='', images=[], details=[] } = stop || {};
+    const image = images[0];
     return (
       <Dialog
         open={true}
         onRequestClose={this.handleClose}
         modal={false}
         bodyStyle={{padding: 0}}
+        autoScrollBodyContent={true}
         >
         <Card>
           <CardMedia
-            overlay={<CardTitle title={title} subtitle={address} />}>
-            <img src={'/static/'+image} />
+            style={{maxHeight: 300, minHeight: 200, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+            overlay={<CardTitle title={title} />}>
+            <img src={'/static/'+image} style={{objectFit: 'cover'}}/>
           </CardMedia>
           <CardText>
-            <p>{address}</p>
             <p>{description}</p>
+            <StopInfo address={address} details={details}></StopInfo>
           </CardText>
         </Card>
 
@@ -58,9 +60,9 @@ class Stop extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  trips: state.trips,
+  stops: state.stops,
 });
 
-const mapDispatchToProps = { getTrip };
+const mapDispatchToProps = { getStops };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Stop);
