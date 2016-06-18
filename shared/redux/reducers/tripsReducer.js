@@ -6,26 +6,42 @@ import {
   TRIP_GET_SUCCESS,
 } from '../actions/tripsActions.js';
 
-export default function reducer(state = [], action = {}) {
+import {
+  STOPS_CREATE_SUCCESS,
+} from '../actions/stopsActions.js';
+
+export default function reducer(state = {}, action = {}) {
   switch (action.type) {
     case TRIPS_GET_SUCCESS:
-      return [
-        ...state,
-        ...action.trips,
-      ];
-    case TRIPS_GET_FAIL:
-      return state;
+      if (action.trips) {
+        return {
+          ...state,
+          ...action.trips,
+        };
+      }
     case TRIPS_CREATE_SUCCESS:
-      return [
-        ...state,
-        action.trip,
-      ];
+      if (action.trip) {
+        return {
+          ...state,
+          ...{[action.trip.id]: action.trip},
+        };
+      }
     case TRIP_GET_SUCCESS:
-      console.log(action.trip);
-      return [
-        ...state,
-        action.trip,
-      ];
+      if (action.trip) {
+        return {
+          ...state,
+          ...{[action.trip.id]: action.trip},
+        };
+      }
+    case STOPS_CREATE_SUCCESS:
+      if (action.stop) {
+        const trip = {...state[action.stop.tripId]};
+        trip.stops.push(action.stop.id);
+        return {
+          ...state,
+          ...{[trip.id]: trip},
+        };
+      }
     default:
       return state;
   }
