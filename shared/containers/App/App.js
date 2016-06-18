@@ -8,19 +8,11 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 import { setNavigationState } from '../../redux/actions/navigationActions.js';
 
 class App extends Component {
-  // static propTypes = {
-  //   children: PropTypes.object.isRequired,
-  //   user: PropTypes.object,
-  //   logout: PropTypes.func.isRequired,
-  //   pushState: PropTypes.func.isRequired,
-  // };
-
-  static contextTypes = {
-    store: PropTypes.object.isRequired,
-  };
-
-  test = () => {
-    console.log('test');
+  static propTypes = {
+    children: PropTypes.object.isRequired,
+    isNavigationOpen: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    setNavigationState: PropTypes.func.isRequired,
   };
 
   render() {
@@ -29,7 +21,7 @@ class App extends Component {
       <div className={styles.app}>
         <div className={styles.background}></div>
         <div className={styles.blend}></div>
-        <AppBar title={title} onLeftIconButtonTouchTap={()=>{setNavigationState(open)}}/>
+        <AppBar title={title} onLeftIconButtonTouchTap={()=>{setNavigationState(!isNavigationOpen)}}/>
         <LeftNav docked={false} open={isNavigationOpen} onRequestChange={(open)=>setNavigationState(open)}>
           <MenuItem ><Link to="/">Home</Link></MenuItem>
           <MenuItem ><Link to="/trips">Trips</Link></MenuItem>
@@ -43,7 +35,6 @@ class App extends Component {
 const mapStateToProps = state => ({
   isNavigationOpen: state.navigation,
   title: state.title,
-  trips: state.trips
 });
 
 const mapDispatchToProps = { setNavigationState };
