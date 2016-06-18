@@ -1,6 +1,6 @@
 import { takeEvery, takeLatest } from 'redux-saga';
 import { fork, call, put } from 'redux-saga/effects';
-import APIClient from '../../../api/ApiClient.js';
+import apiClient from '../../../api/ApiClient.js';
 import {
   TRIPS_GET,
   TRIPS_GET_SUCCESS,
@@ -26,16 +26,16 @@ import {
   STOPS_DELETE,
   STOPS_DELETE_SUCCESS,
   STOPS_DELETE_FAIL
-} from '../actions/tripsActions.js';
+} from '../actions/stopsActions.js';
 
-const api = new APIClient();
+const api = apiClient();
 
 export function *getTrips(action={}) {
   try {
     const trips = yield call(api.get, '/trips');
     yield put({type: TRIPS_GET_SUCCESS, trips})
   } catch (error) {
-    yield put({type: TRIPS_GET_FAIL, error});
+    yield put({type: TRIPS_GET_FAIL, error, name: error.name, message: error.message});
   }
 }
 
@@ -61,7 +61,7 @@ export function *createTrip(action={}) {
     });
     yield put({type: TRIPS_CREATE_SUCCESS, trip});
   } catch (error) {
-    yield put({type: TRIPS_CREATE_FAIL, error});
+    yield put({type: TRIPS_CREATE_FAIL, error, name: error.name, message: error.message});
   }
 }
 
@@ -71,7 +71,7 @@ export function *getTrip(action={}) {
     const trip = yield call(api.get, `/trips/${tripId}`);
     yield put({type: TRIP_GET_SUCCESS, trip});
   } catch (error) {
-    yield put({type: TRIP_GET_FAIL, error});
+    yield put({type: TRIP_GET_FAIL, error, name: error.name, message: error.message});
   }
 }
 
@@ -81,12 +81,12 @@ export function *getStops(action={}) {
     const stops = yield call(api.get, `/stops`, {params: {tripId}});
     yield put({type: STOPS_GET_SUCCESS, stops});
   } catch (error) {
-    yield put({type: STOPS_GET_FAIL, error});
+    yield put({type: STOPS_GET_FAIL, name: error.name, message: error.message});
   }
 }
 
 export function *createStop(action={}) {
-  const { tripId, title, description, address, images=[], coordinates={} } = action;
+  const { tripId, title, description, address, images=[], coordinates={} } = action.trip;
   try {
     const stop = yield call(api.put, `/stops`, {
       params: {
@@ -100,7 +100,7 @@ export function *createStop(action={}) {
     });
     yield put({type: STOPS_CREATE_SUCCESS, stop});
   } catch (error) {
-    yield put({type: STOPS_CREATE_FAIL, error});
+    yield put({type: STOPS_CREATE_FAIL, error, name: error.name, message: error.message});
   }
 }
 
@@ -119,7 +119,7 @@ export function *updateStop(action={}) {
     });
     yield put({type: STOPS_UPDATE_SUCCESS, stop});
   } catch (error) {
-    yield put({type: STOPS_UPDATE_FAIL, error});
+    yield put({type: STOPS_UPDATE_FAIL, error, name: error.name, message: error.message});
   }
 }
 
@@ -129,12 +129,12 @@ export function *deleteStop(action={}) {
     const stop = yield call(api.delete, `/stops/${stopId}`);
     yield put({type: STOPS_DELETE_SUCCESS, stop});
   } catch (error) {
-    yield put({type: STOPS_DELETE_FAIL, error});
+    yield put({type: STOPS_DELETE_FAIL, error, name: error.name, message: error.message});
   }
 }
 
 function *watchTripsRequest() {
-    yield *takeLatest(TRIPS_GET, getTrips);
+  yield *takeLatest(TRIPS_GET, getTrips);
 }
 
 function *watchCreateTrip() {
@@ -165,6 +165,7 @@ export default function *root() {
   yield [
     fork(watchTripsRequest),
     fork(watchCreateTrip),
+    fork(watchGetTrip),
     fork(watchGetStops),
     fork(watchCreateStop),
     fork(watchUpdateStop),
