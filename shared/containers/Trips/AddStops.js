@@ -4,10 +4,13 @@ import TextField from 'material-ui/lib/text-field';
 import RaisedButton from 'material-ui/lib/raised-button';
 import FlatButton from 'material-ui/lib/flat-button';
 import UploadIcon from 'material-ui/lib/svg-icons/file/file-upload';
+import { SelectField, MenuItem } from 'material-ui/lib';
+import { CommunicationCall } from 'material-ui/lib/svg-icons';
 import { reduxForm } from 'redux-form';
 import { push as pushHistory } from 'react-router-redux';
 
 import { createStop } from '../../redux/actions/stopsActions.js';
+import { IconDropdown } from '../../components/components';
 
 class AddStops extends Component {
   static contextTypes = {
@@ -36,9 +39,7 @@ class AddStops extends Component {
     e.preventDefault();
     const { fields } = this.props;
     const files = [...e.target.files];
-    console.log('fields', fields);
     fields.images.handleChange(files);
-
   };
 
   render() {
@@ -56,26 +57,54 @@ class AddStops extends Component {
         onRequestClose={this.handleClose}
         modal={false}
         actions={actions}
+        bodyStyle={{overflow: 'auto'}}
         >
-        <TextField
-          hintText='A title for this location'
-          floatingLabelText='Title'
-          {...title}
-        />
-        <br />
-        <TextField
-          hintText='A description of this location'
-          floatingLabelText='Description'
-          multiLine={true}
-          rows={4}
-          {...description}
-        />
-        <br />
-        <TextField
-          hintText='Street address for this location'
-          floatingLabelText='Address'
-          {...address}
-        />
+        <div style={{display: 'flex'}}>
+          <IconDropdown selected='phone' iconMap={{'phone': CommunicationCall}} />
+          <div>on thing</div>
+          <div>two thing</div>
+        </div>
+        <div className={styles.form}>
+          <div className={styles.formSection}>
+            <TextField
+              hintText='A title for this location'
+              floatingLabelText='Title'
+              {...title}
+            />
+            <TextField
+              hintText='A description of this location'
+              floatingLabelText='Description'
+              multiLine={true}
+              rows={4}
+              {...description}
+            />
+            <TextField
+              hintText='Street address for this location'
+              floatingLabelText='Address'
+              {...address}
+            />
+          </div>
+          <div className={styles.formSection}>
+            <h2>Other Details</h2>
+            <h3>Add freeform data such as contact info or associated costs</h3>
+            <div className={styles.freeformContainer}>
+              <SelectField value={<UploadIcon/>}>
+                <MenuItem value={1} leftIcon={<UploadIcon/>} primaryText='Upload'/>
+                <MenuItem value={2}/>
+              </SelectField>
+              <TextField
+                hintText='Label (e.g. Phone, Email, Price etc.)'
+                floatingLabelText='Label'
+
+              />
+              <TextField
+                hintText='Value that matches your label'
+                floatingLabelText='Value'
+
+              />
+            </div>
+          </div>
+        </div>
         <br />
 
         <FlatButton label="Upload Images" labelPosition="before" icon={<UploadIcon />}>
@@ -106,5 +135,14 @@ const styles = cssInJS({
     left: 0,
     width: '100%',
     opacity: 0,
+  },
+  form: {
+    // display: 'flex',
+  },
+  formSection: {
+    // flexGrow: 1,
+  },
+  freeformContainer: {
+    display: 'flex',
   }
 });
